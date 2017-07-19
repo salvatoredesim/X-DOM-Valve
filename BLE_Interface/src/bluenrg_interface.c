@@ -50,7 +50,7 @@ const BlueNRG_Stack_Initialization_t BlueNRG_Stack_Init_params = {
 
 volatile uint8_t set_connectable = 1;
 
-//uint16_t connection_handle = 0;
+uint16_t connection_handle = 0;
 uint8_t connInfo[20];
 
 BOOL sensor_board = FALSE; // It is True if sensor boad has been detected
@@ -58,6 +58,7 @@ BOOL sensor_board = FALSE; // It is True if sensor boad has been detected
 //int connected = FALSE;
 
 extern uint16_t BLECharCmdHandle;
+extern uint16_t BLECharAckHandle;
 
 void BlueNRG_Interface_Init(uint8_t * mac_address){
 	
@@ -99,7 +100,7 @@ uint8_t BlueNRG_Device_Peripheral_Init(uint8_t* mac_address){
   }
   
   /* GAP Init */
-  ret = aci_gap_init(GAP_CENTRAL_ROLE|GAP_PERIPHERAL_ROLE, 0, 0x08, &service_handle, &dev_name_char_handle, &appearance_char_handle);
+  ret = aci_gap_init(GAP_PERIPHERAL_ROLE, 0, 0x08, &service_handle, &dev_name_char_handle, &appearance_char_handle);
   if (ret != BLE_STATUS_SUCCESS) {
     //PRINTF("aci_gap_init() failed: 0x%02x\r\n", ret);
     return ret;
@@ -182,7 +183,7 @@ void hci_le_connection_complete_event(uint8_t Status,
                                       uint16_t Supervision_Timeout,
                                       uint8_t Master_Clock_Accuracy)
 { 
-  
+  connection_handle = Connection_Handle;
   PRINTF("Valve connected. \r\n");
 	int i = 0;
 	PRINTF("Address: ");
@@ -209,7 +210,7 @@ void hci_disconnection_complete_event(uint8_t Status,
                                       uint16_t Connection_Handle,
                                       uint8_t Reason)
 {
-
+	connection_handle = 0;
   PRINTF("Valve disconnected. \r\n");
 	BlueNRG_SetConnectable();
 	appStatus = INITIAL_CALIBRATION;
@@ -231,7 +232,11 @@ void aci_gatt_read_permit_req_event(uint16_t Connection_Handle,
                                     uint16_t Attribute_Handle,
                                     uint16_t Offset)
 {
-	PRINTF("READ Event generated. \r\n");
+	if(Attribute_Handle == BLECharAckHandle +1){
+		XDOM_LoadStatus();
+		PRINTF("READ Event generated. \r\n");
+		aci_gatt_allow_read(connection_handle);
+	}
   //Read_Request_CB(Attribute_Handle);    
 }
 

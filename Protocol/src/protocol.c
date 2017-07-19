@@ -20,6 +20,8 @@ uint8_t operation_pending = 0;
 uint8_t name_conf = 0, zone_conf = 0, time_conf = 0;
 uint8_t stop_flag = 0;
 
+uint8_t last_operation[2];
+
 extern uint8_t isStartReached;
 extern uint8_t isEndReached;
 
@@ -48,6 +50,8 @@ void ParseMessage(uint8_t Attr_Data[], uint8_t Attr_Data_Length){
 		Osal_MemSet(payload,0x00,payload_size);
 		
 		ExtractPayload(Attr_Data,payload,payload_size);
+		
+		last_operation[0] = type_message;
 		
 		switch(type_message){
 			case RESET:{
@@ -84,11 +88,14 @@ void ParseMessage(uint8_t Attr_Data[], uint8_t Attr_Data_Length){
 					stop_flag = 1;
 				}
 				break;
-			default:
+			default:{
 				PRINTF("Unknown command. \r\n");
+				last_operation[0] = 0;
 			break;
+			}
 		}
 		
+		last_operation[1] = 0xFA;
 }
 
 void XDOM_Configure(uint8_t Payload_Data[], uint8_t size){
@@ -220,4 +227,11 @@ void XDOM_Open_Close_Steps(uint8_t command,uint8_t orientation, uint8_t steps_ne
 		stop_flag = 0;
 		
 
+}
+
+void XDOM_LoadStatus(){
+	  uint8_t ret = aci_gatt_update_char_value(BLEServHandle, BLECharAckHandle, 0, 2, last_operation);
+		if (ret != BLE_STATUS_SUCCESS){
+			PRINTF("Error updating ACK Characteristic. \r\n") ;  
+		}
 }

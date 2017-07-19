@@ -29,10 +29,10 @@
 #else /* NO OTA Service is required */
 
 /* Number of services requests from the sensor demo */
-#define NUM_APP_GATT_SERVICES 2
+#define NUM_APP_GATT_SERVICES 1
 
 /* Number of attributes requests from the sensor demo */
-#define NUM_APP_GATT_ATTRIBUTES 15
+#define NUM_APP_GATT_ATTRIBUTES 30
 #endif
 
 /* Number of links needed for the demo: 1
@@ -57,7 +57,8 @@
 #ifndef SENSOR_EMULATION
 #define ATT_VALUE_ARRAY_SIZE    (43 + 106  + OTA_ATT_VALUE_ARRAY_SIZE) //(GATT + GAP) = 43 (Device Name: BlueNRG) + Acceleration (Acceleration (27) + Free Fall (21) characteristics) +  Environmental Sensor (Temperature (28), Pressure (29)  characteristics)  Services
 #else
-#define ATT_VALUE_ARRAY_SIZE    (43 + 106 + 28 + OTA_ATT_VALUE_ARRAY_SIZE) //(GATT + GAP) = 43 (Device Name: BlueNRG) + Acceleration (Acceleration (27) + Free Fall (21) characteristics) +  Environmental Sensor (Temperature (28) , Pressure (29), Humidity (28) characteristics)  Services
+#define ATT_VALUE_ARRAY_SIZE    (43 + 106 + 28 + OTA_ATT_VALUE_ARRAY_SIZE)
+//(GATT + GAP) = 43 (Device Name: BlueNRG) + Acceleration (Acceleration (27) + Free Fall (21) characteristics) +  Environmental Sensor (Temperature (28) , Pressure (29), Humidity (28) characteristics)  Services
 #endif 
 
 /* Flash security database size */
