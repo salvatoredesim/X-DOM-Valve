@@ -163,6 +163,8 @@ uint8_t XDOM_Open_Close(uint8_t Payload_Data[], uint8_t size, uint8_t command, u
 					break;
 				}
 				case STEP:
+					XDOM_Open_Close_Steps(command,orientation,TAG_DATA[0]);
+					status_op = STATUS_OK;
 					break;
 				case HALF:
 					XDOM_Open_Close_Steps(command,orientation,steps/2);
