@@ -31,12 +31,15 @@
 #define ZONE_NAME			0x01
 #define	TIME_CLOCK		0x02
 
+#define STATUS_OK			0xFA
+#define STATUS_ERR		0xFF
+
 /* Parse the received message */
 void ParseMessage(uint8_t Attr_Data[], uint8_t Attr_Data_Length);
 
-void XDOM_Configure(uint8_t Payload_Data[], uint8_t size);
+uint8_t XDOM_Configure(uint8_t Payload_Data[], uint8_t size);
 
-void XDOM_Open_Close(uint8_t Payload_Data[], uint8_t size,uint8_t command, uint8_t orientation);
+uint8_t XDOM_Open_Close(uint8_t Payload_Data[], uint8_t size,uint8_t command, uint8_t orientation);
 
 void XDOM_Open_Close_Steps(uint8_t command,uint8_t orientation, uint8_t steps_needed);
 

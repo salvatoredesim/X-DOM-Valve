@@ -60,26 +60,27 @@ void ParseMessage(uint8_t Attr_Data[], uint8_t Attr_Data_Length){
 				name_conf = 0;
 				zone_conf = 0;
 				time_conf = 0;
+				last_operation[1] = STATUS_OK;
 			}
 				break;
 			case INIT_DATA:
 				if(XDOM_IsConfigured()){
 				PRINTF("You performed a INIT_DATA \r\n");
-				XDOM_Configure(payload,payload_size);
+				last_operation[1] = XDOM_Configure(payload,payload_size);
 				}
 				break;
 			case OPEN:
 			{
 				PRINTF("You performed a OPEN \r\n");
 				operation_pending = 1;
-				XDOM_Open_Close(payload,payload_size,type_message,CLOCKWISE);
+				last_operation[1] = XDOM_Open_Close(payload,payload_size,type_message,CLOCKWISE);
 				operation_pending = 0;
 				break;
 			}
 			case CLOSE:
 				PRINTF("You performed a CLOSE \r\n");
 				operation_pending = 1;
-				XDOM_Open_Close(payload,payload_size,type_message,ANTICLOCKWISE);
+				last_operation[1] = XDOM_Open_Close(payload,payload_size,type_message,ANTICLOCKWISE);
 				operation_pending = 0;
 				break;
 			case STOP_CMD:
@@ -90,16 +91,16 @@ void ParseMessage(uint8_t Attr_Data[], uint8_t Attr_Data_Length){
 				break;
 			default:{
 				PRINTF("Unknown command. \r\n");
-				last_operation[0] = 0;
+				last_operation[0] = STATUS_ERR;
+				last_operation[1] = STATUS_ERR;
 			break;
 			}
 		}
-		
-		last_operation[1] = 0xFA;
 }
 
-void XDOM_Configure(uint8_t Payload_Data[], uint8_t size){
+uint8_t XDOM_Configure(uint8_t Payload_Data[], uint8_t size){
 		int i = 0;
+		uint8_t status_op = STATUS_ERR;
 		while(i < size){
 				uint8_t TAG = Payload_Data[i];
 				uint8_t LEN = Payload_Data[i+1];
@@ -132,11 +133,14 @@ void XDOM_Configure(uint8_t Payload_Data[], uint8_t size){
 		
 		if((name_conf) && (zone_conf) && (time_conf)){
 			XDOM_SetConfigured();
+			status_op = STATUS_OK;
 		}
+		return status_op;
 }
 
-void XDOM_Open_Close(uint8_t Payload_Data[], uint8_t size, uint8_t command, uint8_t orientation){
+uint8_t XDOM_Open_Close(uint8_t Payload_Data[], uint8_t size, uint8_t command, uint8_t orientation){
 	int i = 0;
+	uint8_t status_op = STATUS_ERR;
 	while(i < size){
 			uint8_t TAG = Payload_Data[i];
 			uint8_t LEN = Payload_Data[i+1];
@@ -154,6 +158,7 @@ void XDOM_Open_Close(uint8_t Payload_Data[], uint8_t size, uint8_t command, uint
 						steps = XDOM_GetStopSteps();
 					}
 					XDOM_Open_Close_Steps(command,orientation,steps);
+					status_op = STATUS_OK;
 					break;
 				}
 				case STEP:
@@ -166,7 +171,7 @@ void XDOM_Open_Close(uint8_t Payload_Data[], uint8_t size, uint8_t command, uint
 			}
 			i = i + 2 + LEN;
 	}
-	
+	return status_op;
 }
  
 uint16_t steps_open_done = 0;
