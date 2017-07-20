@@ -148,15 +148,16 @@ uint8_t XDOM_Open_Close(uint8_t Payload_Data[], uint8_t size, uint8_t command, u
 			Osal_MemSet(TAG_DATA,0x00,LEN);
 			Osal_MemCpy(TAG_DATA,Payload_Data+i+2,LEN);
 			
+			uint16_t steps;
+			if(command == OPEN){
+				steps = XDOM_GetStartSteps();
+			}
+			else{
+				steps = XDOM_GetStopSteps();
+			}
+					
 			switch(TAG){
 				case FULL:{
-					uint16_t steps;
-					if(command == OPEN){
-						steps = XDOM_GetStartSteps();
-					}
-					else{
-						steps = XDOM_GetStopSteps();
-					}
 					XDOM_Open_Close_Steps(command,orientation,steps);
 					status_op = STATUS_OK;
 					break;
@@ -164,8 +165,12 @@ uint8_t XDOM_Open_Close(uint8_t Payload_Data[], uint8_t size, uint8_t command, u
 				case STEP:
 					break;
 				case HALF:
+					XDOM_Open_Close_Steps(command,orientation,steps/2);
+					status_op = STATUS_OK;
 					break;
 				case QUARTER:
+					XDOM_Open_Close_Steps(command,orientation,steps/4);
+					status_op = STATUS_OK;
 					break;
 				
 			}
@@ -175,63 +180,48 @@ uint8_t XDOM_Open_Close(uint8_t Payload_Data[], uint8_t size, uint8_t command, u
 }
  
 uint16_t steps_open_done = 0;
-uint16_t steps_close_done = 0;
-
+uint16_t test_count = 0;
 void XDOM_Open_Close_Steps(uint8_t command,uint8_t orientation, uint8_t steps_needed){
 		uint16_t step_to_open;
-		uint16_t step_to_close;
-		uint8_t steps_to_do;
+		uint8_t step_to_do;
 		uint16_t steps = 0;
-#if IMPLEMENTED_INT_LINES
-		if((command == OPEN) && !isEndReached){
-#else
+		
+		PRINTF("Steps required %x \r\n",steps_needed);
+		PRINTF("Steps open performed %x \r\n",steps_open_done);
+	
 		if(command == OPEN){
-#endif
-			step_to_open = steps_needed;
-			PRINTF("Performing %x open steps... \r\n",step_to_open);
-
-			if(steps_open_done == step_to_open){
-				steps = 0;
-				steps_to_do = step_to_open;
+			step_to_open = XDOM_GetStartSteps();
+			step_to_do = step_to_open - steps_open_done;
+			if(steps_needed > step_to_do){
+				steps_needed = step_to_do;
 			}
-			else{
-				steps_to_do = step_to_open - steps_open_done;
-				steps = steps_open_done;
+		}else{
+			if(steps_needed >= steps_open_done){
+				steps_needed = steps_open_done;
 			}
-			
-			while((steps < steps_to_do) && !stop_flag){
-				ULN2003_STEP(orientation);
-				steps++;
-			}
-			steps_open_done = steps;
 		}
-
-#if IMPLEMENTED_INT_LINES		
-		if((command == CLOSE) && !isStartReached){
-#else
-		if(command == CLOSE){
-#endif
-			step_to_close = steps_needed;
-			PRINTF("Performing %x close steps... \r\n",step_to_close);
-			
-			if(steps_close_done == step_to_close) {
-				steps = 0;
-				steps_to_do = step_to_close;
-			}
-			else{
-				steps_to_do = step_to_close - steps_close_done;
-				steps = steps_close_done;
-			}
-			
-			while((steps < steps_to_do) && !stop_flag){
-				ULN2003_STEP(orientation);
-				steps++;
-			}
-			steps_close_done = steps;
-		}
-		stop_flag = 0;
 		
 
+		while((steps < steps_needed)){
+				ULN2003_STEP(orientation);
+				steps++;
+				if(command == OPEN){
+					steps_open_done++;
+				}else{
+					if((steps_open_done + steps) >= steps_needed){
+						test_count++;
+						steps_open_done--;				
+					}
+				}
+			}		
+			
+		PRINTF("Steps performed %x \r\n",steps_needed);
+		PRINTF("Steps open remaining %x \r\n",steps_open_done);
+		if(test_count){
+			PRINTF("Steps count in test %x \r\n",test_count);
+			test_count = 0;
+		}
+		
 }
 
 void XDOM_LoadStatus(){

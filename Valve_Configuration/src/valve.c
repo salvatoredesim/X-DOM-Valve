@@ -77,7 +77,7 @@ void Valve_APP(){
 		case INITIAL_CALIBRATION:
 			if(XDOM_IsConfigured()){
 				PRINTF("Calibrating Valve Motor... \r\n");
-				//Calibrate();
+				Calibrate();
 				PRINTF("Calibration Complete. \r\n");
 			}
 				appStatus = READ_CONFIGURATION;
