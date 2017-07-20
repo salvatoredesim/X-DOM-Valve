@@ -235,8 +235,8 @@ void aci_gatt_read_permit_req_event(uint16_t Connection_Handle,
 	if(Attribute_Handle == BLECharAckHandle +1){
 		XDOM_LoadStatus();
 		PRINTF("READ Event generated. \r\n");
-		aci_gatt_allow_read(connection_handle);
 	}
+	aci_gatt_allow_read(connection_handle);
   //Read_Request_CB(Attribute_Handle);    
 }
 
