@@ -151,7 +151,7 @@ uint8_t XDOM_Open_Close(uint8_t Payload_Data[], uint8_t size, uint8_t command, u
 			Osal_MemSet(TAG_DATA,0x00,LEN);
 			Osal_MemCpy(TAG_DATA,Payload_Data+i+2,LEN);
 			
-			uint16_t steps;
+			uint32_t steps;
 			if(command == OPEN){
 				steps = XDOM_GetStartSteps();
 			}
@@ -184,7 +184,7 @@ uint8_t XDOM_Open_Close(uint8_t Payload_Data[], uint8_t size, uint8_t command, u
 	return status_op;
 }
  
-void XDOM_Open_Close_Steps(uint8_t command,uint8_t orientation, uint8_t steps_needed){
+void XDOM_Open_Close_Steps(uint8_t command,uint8_t orientation, uint32_t steps_needed){
 		uint32_t step_to_do;
 		uint32_t steps = 0;
 		

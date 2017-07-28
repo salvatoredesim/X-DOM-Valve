@@ -41,7 +41,7 @@ uint8_t XDOM_Configure(uint8_t Payload_Data[], uint8_t size);
 
 uint8_t XDOM_Open_Close(uint8_t Payload_Data[], uint8_t size,uint8_t command, uint8_t orientation);
 
-void XDOM_Open_Close_Steps(uint8_t command,uint8_t orientation, uint8_t steps_needed);
+void XDOM_Open_Close_Steps(uint8_t command,uint8_t orientation, uint32_t steps_needed);
 
 void XDOM_LoadStatus(void);
 

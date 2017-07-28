@@ -146,11 +146,11 @@ void Calibrate(){
 		isStartReached = 0;	
 		
 		// TEST VALUES
-		open_steps = 0x5F;
+		open_steps = 0x0100;
 		close_steps = open_steps;
 		
-		PRINTF("Test Steps to open valve written in memory: 0x%02x \r\n",open_steps);
-		PRINTF("Test Steps to close valve written in memory: 0x%02x \r\n",close_steps);
+		PRINTF("Test Steps to open valve written in memory: %x \r\n",open_steps);
+		PRINTF("Test Steps to close valve written in memory: %x \r\n",close_steps);
 		
 		XDOM_SetSteps(open_steps,close_steps);
 		
@@ -158,5 +158,5 @@ void Calibrate(){
 		steps_open_done = open_steps;
 		steps_close_done = 0;
 		
-		PRINTF("Step stored in memory: START 0x%02x STOP 0x%02x \r\n",XDOM_GetStartSteps(),XDOM_GetStopSteps());
+		PRINTF("Step stored in memory: START %x STOP %x \r\n",XDOM_GetStartSteps(),XDOM_GetStopSteps());
 }
