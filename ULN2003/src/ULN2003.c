@@ -75,6 +75,13 @@ void ULN2003_TestSequence(uint8_t spin, uint8_t type_rotation){
 
 }
 
+void ULN2003_StopAll(){
+  GPIO_WriteBit(IN1, Bit_RESET);
+  GPIO_WriteBit(IN2, Bit_RESET);
+  GPIO_WriteBit(IN3, Bit_RESET);
+  GPIO_WriteBit(IN4, Bit_RESET);
+}
+
 void ULN2003_STEP(uint8_t type_rotation){
 	for (int i = 0; i < 8; i++) {
 		switch (type_rotation) {

@@ -247,6 +247,10 @@ void XDOM_Open_Close_Steps(uint8_t command,uint8_t orientation, uint8_t steps_ne
 				}
 			}		
 			
+		ULN2003_StopAll();	
+		//XDOM_SetActualStartSteps(steps_open_done);
+		//XDOM_SetActualStopSteps(steps_close_done);	
+			
 		PRINTF("New actual steps open state %x \r\n",steps_open_done);
 		PRINTF("New actual steps close state %x \r\n",steps_close_done);
 

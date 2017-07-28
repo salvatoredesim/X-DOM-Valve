@@ -32,5 +32,7 @@ void ULN2003_TestSequence(uint8_t spin, uint8_t type_rotation);
 /* Make a step in clockwise or anti clockwise orientation */
 void ULN2003_STEP(uint8_t type_rotation);
 
+void ULN2003_StopAll(void);
+
 void SdkDelayMs(volatile uint32_t lTimeMs);
 #endif /* ULN2003_H_ */

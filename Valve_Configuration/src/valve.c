@@ -139,6 +139,8 @@ void Calibrate(){
 					open_steps++;
 		}
 
+		ULN2003_StopAll();
+		
 		PRINTF("Steps to open valve: 0x%02x \r\n",open_steps);
 		PRINTF("Steps to close valve: 0x%02x \r\n",close_steps);
 		isStartReached = 0;	
