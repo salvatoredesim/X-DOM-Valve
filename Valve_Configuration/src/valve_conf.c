@@ -42,17 +42,88 @@ void XDOM_SetConfigured(){
 		FLASH_MOD_WriteByteBurst(ADDRESS_CONFIGURED,X_DOM_ConfigValue,10);
 }
 
-void XDOM_SetSteps(uint8_t start_steps, uint8_t stop_steps){
-		FLASH_MOD_WriteByte(ADDRESS_START_STEPS,start_steps);
-		FLASH_MOD_WriteByte(ADDRESS_STOP_STEPS,stop_steps);
+void XDOM_SetSteps(uint32_t start_steps, uint32_t stop_steps){
+		uint8_t start_1_byte = (uint8_t) start_steps;
+		uint8_t start_2_byte = (uint8_t) ((start_steps & 0x0000FF00) >> 8) ;
+		uint8_t start_3_byte = (uint8_t) ((start_steps & 0x00FF0000) >> 16) ;
+		uint8_t start_4_byte = (uint8_t) ((start_steps & 0xFF000000) >> 24) ;
+	
+	
+		uint8_t stop_1_byte = (uint8_t) stop_steps;
+		uint8_t stop_2_byte = (uint8_t) ((stop_steps & 0x0000FF00) >> 8) ;
+		uint8_t stop_3_byte = (uint8_t) ((stop_steps & 0x00FF0000) >> 16) ;
+		uint8_t stop_4_byte = (uint8_t) ((stop_steps & 0xFF000000) >> 24) ;
+	
+		FLASH_MOD_WriteByte(ADDRESS_START_STEPS,start_1_byte);
+		FLASH_MOD_WriteByte(ADDRESS_START_STEPS+1,start_2_byte);
+		FLASH_MOD_WriteByte(ADDRESS_START_STEPS+2,start_3_byte);
+		FLASH_MOD_WriteByte(ADDRESS_START_STEPS+3,start_4_byte);
+	
+		FLASH_MOD_WriteByte(ADDRESS_STOP_STEPS,stop_1_byte);
+		FLASH_MOD_WriteByte(ADDRESS_STOP_STEPS+1,stop_2_byte);
+		FLASH_MOD_WriteByte(ADDRESS_STOP_STEPS+2,stop_3_byte);
+		FLASH_MOD_WriteByte(ADDRESS_STOP_STEPS+3,stop_4_byte);
 }
 
-uint8_t XDOM_GetStartSteps(){
-	return FLASH_MOD_ReadByte(ADDRESS_START_STEPS);
+void XDOM_SetActualStartSteps(uint32_t start_steps){
+		uint8_t start_1_byte = (uint8_t) start_steps;
+		uint8_t start_2_byte = (uint8_t) ((start_steps & 0x0000FF00) >> 8) ;
+		uint8_t start_3_byte = (uint8_t) ((start_steps & 0x00FF0000) >> 16) ;
+		uint8_t start_4_byte = (uint8_t) ((start_steps & 0xFF000000) >> 24) ;
+	
+		FLASH_MOD_WriteByte(ADDRESS_ACTUAL_START_STEPS,start_1_byte);
+		FLASH_MOD_WriteByte(ADDRESS_ACTUAL_START_STEPS+1,start_2_byte);
+		FLASH_MOD_WriteByte(ADDRESS_ACTUAL_START_STEPS+2,start_3_byte);
+		FLASH_MOD_WriteByte(ADDRESS_ACTUAL_START_STEPS+3,start_4_byte);
 }
 
-uint8_t XDOM_GetStopSteps(){
-	return FLASH_MOD_ReadByte(ADDRESS_STOP_STEPS);
+void XDOM_SetActualStopSteps(uint32_t stop_steps){
+		uint8_t start_1_byte = (uint8_t) stop_steps;
+		uint8_t start_2_byte = (uint8_t) ((stop_steps & 0x0000FF00) >> 8) ;
+		uint8_t start_3_byte = (uint8_t) ((stop_steps & 0x00FF0000) >> 16) ;
+		uint8_t start_4_byte = (uint8_t) ((stop_steps & 0xFF000000) >> 24) ;
+	
+		FLASH_MOD_WriteByte(ADDRESS_ACTUAL_STOP_STEPS,start_1_byte);
+		FLASH_MOD_WriteByte(ADDRESS_ACTUAL_STOP_STEPS+1,start_2_byte);
+		FLASH_MOD_WriteByte(ADDRESS_ACTUAL_STOP_STEPS+2,start_3_byte);
+		FLASH_MOD_WriteByte(ADDRESS_ACTUAL_STOP_STEPS+3,start_4_byte);
+}
+
+uint32_t XDOM_GetStartSteps(){
+	
+	uint8_t step_1_byte = FLASH_MOD_ReadByte(ADDRESS_START_STEPS);
+	uint8_t step_2_byte = FLASH_MOD_ReadByte(ADDRESS_START_STEPS+1);
+	uint8_t step_3_byte = FLASH_MOD_ReadByte(ADDRESS_START_STEPS+2);
+	uint8_t step_4_byte = FLASH_MOD_ReadByte(ADDRESS_START_STEPS+3);
+	return (step_1_byte | (step_2_byte << 8) | (step_3_byte << 16) | (step_4_byte << 24));
+}
+
+
+uint32_t XDOM_GetActualStartSteps(){
+	
+	uint8_t step_1_byte = FLASH_MOD_ReadByte(ADDRESS_ACTUAL_START_STEPS);
+	uint8_t step_2_byte = FLASH_MOD_ReadByte(ADDRESS_ACTUAL_START_STEPS+1);
+	uint8_t step_3_byte = FLASH_MOD_ReadByte(ADDRESS_ACTUAL_START_STEPS+2);
+	uint8_t step_4_byte = FLASH_MOD_ReadByte(ADDRESS_ACTUAL_START_STEPS+3);
+	return (step_1_byte | (step_2_byte << 8) | (step_3_byte << 16) | (step_4_byte << 24));
+}
+
+uint32_t XDOM_GetStopSteps(){
+	
+	uint8_t step_1_byte = FLASH_MOD_ReadByte(ADDRESS_STOP_STEPS);
+	uint8_t step_2_byte = FLASH_MOD_ReadByte(ADDRESS_STOP_STEPS+1);
+	uint8_t step_3_byte = FLASH_MOD_ReadByte(ADDRESS_STOP_STEPS+2);
+	uint8_t step_4_byte = FLASH_MOD_ReadByte(ADDRESS_STOP_STEPS+3);
+	return (step_1_byte | (step_2_byte << 8) | (step_3_byte << 16) | (step_4_byte << 24));
+}
+
+uint32_t XDOM_GetActualStopSteps(){
+	
+	uint8_t step_1_byte = FLASH_MOD_ReadByte(ADDRESS_ACTUAL_STOP_STEPS);
+	uint8_t step_2_byte = FLASH_MOD_ReadByte(ADDRESS_ACTUAL_STOP_STEPS+1);
+	uint8_t step_3_byte = FLASH_MOD_ReadByte(ADDRESS_ACTUAL_STOP_STEPS+2);
+	uint8_t step_4_byte = FLASH_MOD_ReadByte(ADDRESS_ACTUAL_STOP_STEPS+3);
+	return (step_1_byte | (step_2_byte << 8) | (step_3_byte << 16) | (step_4_byte << 24));
 }
 
 void XDOM_SetNotConfigured(){

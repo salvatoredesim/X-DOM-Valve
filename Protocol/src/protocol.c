@@ -28,6 +28,9 @@ extern uint8_t isEndReached;
 extern uint16_t BLEServHandle;
 extern uint16_t BLECharAckHandle;
 
+uint32_t steps_open_done = 0;
+uint32_t steps_close_done = 0;
+
 void ExtractPayload(uint8_t Attr_Data[], uint8_t* payload, uint8_t size){
 		Osal_MemCpy(payload,Attr_Data+3,size);
 }
@@ -181,48 +184,72 @@ uint8_t XDOM_Open_Close(uint8_t Payload_Data[], uint8_t size, uint8_t command, u
 	return status_op;
 }
  
-uint16_t steps_open_done = 0;
-uint16_t test_count = 0;
 void XDOM_Open_Close_Steps(uint8_t command,uint8_t orientation, uint8_t steps_needed){
-		uint16_t step_to_open;
-		uint8_t step_to_do;
-		uint16_t steps = 0;
+		uint32_t step_to_do;
+		uint32_t steps = 0;
 		
+		PRINTF("Actual steps open state %x \r\n",steps_open_done);
+		PRINTF("Actual steps close state %x \r\n",steps_close_done);
+	
 		PRINTF("Steps required %x \r\n",steps_needed);
-		PRINTF("Steps open performed %x \r\n",steps_open_done);
 	
 		if(command == OPEN){
-			step_to_open = XDOM_GetStartSteps();
-			step_to_do = step_to_open - steps_open_done;
-			if(steps_needed > step_to_do){
-				steps_needed = step_to_do;
+			if((steps_open_done != 0)){
+				
+				if(steps_needed > (XDOM_GetStartSteps() - steps_open_done)){
+					step_to_do = XDOM_GetStartSteps() - steps_open_done;
+					PRINTF("Steps neeeded > Steps remained for the open limit \r\n");
+				}
+				else
+				{
+					PRINTF("Steps required < Steps remained for a full open \r\n");
+					step_to_do = steps_needed;
+				}
 			}
-		}else{
-			if(steps_needed >= steps_open_done){
-				steps_needed = steps_open_done;
+			else{
+				step_to_do = steps_needed;
 			}
+			PRINTF("Steps to do %x \r\n",step_to_do);
+		}
+		else{
+			if((steps_close_done != 0)){
+				
+				if(steps_needed >= (XDOM_GetStopSteps() - steps_close_done)){
+					PRINTF("Steps neeeded > Steps remained for the close limit \r\n");
+					step_to_do = XDOM_GetStopSteps() - steps_close_done;
+				}
+				else
+				{
+					PRINTF("Steps required < Steps remained for a full close \r\n");
+					step_to_do = steps_needed;
+				}
+			}
+			else{
+				step_to_do = steps_needed;
+			}
+			PRINTF("Steps to do %x \r\n",step_to_do);
 		}
 		
 
-		while((steps < steps_needed)){
+		while((steps < step_to_do)){
 				ULN2003_STEP(orientation);
 				steps++;
 				if(command == OPEN){
 					steps_open_done++;
+					if(steps_close_done){
+							steps_close_done--;
+						}
 				}else{
-					if((steps_open_done + steps) >= steps_needed){
-						test_count++;
-						steps_open_done--;				
-					}
+					steps_close_done++;
+					if(steps_open_done){
+							steps_open_done--;
+						}
 				}
 			}		
 			
-		PRINTF("Steps performed %x \r\n",steps_needed);
-		PRINTF("Steps open remaining %x \r\n",steps_open_done);
-		if(test_count){
-			PRINTF("Steps count in test %x \r\n",test_count);
-			test_count = 0;
-		}
+		PRINTF("New actual steps open state %x \r\n",steps_open_done);
+		PRINTF("New actual steps close state %x \r\n",steps_close_done);
+
 		
 }
 

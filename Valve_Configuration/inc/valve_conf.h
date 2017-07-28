@@ -22,11 +22,19 @@ void XDOM_SetName(char* name, uint8_t size);
 
 void XDOM_SetNameByteForm(uint8_t* name, uint8_t size);
 
-void XDOM_SetSteps(uint8_t start_steps, uint8_t stop_steps);
+void XDOM_SetSteps(uint32_t start_steps, uint32_t stop_steps);
 
-uint8_t XDOM_GetStartSteps(void);
+void XDOM_SetActualStartSteps(uint32_t start_steps);
 
-uint8_t XDOM_GetStopSteps(void);
+void XDOM_SetActualStopSteps(uint32_t stop_steps);
+
+uint32_t XDOM_GetActualStartSteps(void);
+
+uint32_t XDOM_GetActualStopSteps(void);
+
+uint32_t XDOM_GetStartSteps(void);
+
+uint32_t XDOM_GetStopSteps(void);
 
 uint32_t* XDOM_GetValveName(uint8_t* size);
 

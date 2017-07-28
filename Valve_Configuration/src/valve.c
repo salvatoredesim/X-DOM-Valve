@@ -6,6 +6,9 @@ uint8_t isEndReached = 0;
 ValveStatus appStatus = INITIAL_CALIBRATION;
 ValveRole valveRole = UNKNOWN_ROLE;
 
+extern uint32_t steps_open_done;
+extern uint32_t steps_close_done;
+
 #ifndef DEBUG
 #define DEBUG 1
 #endif
@@ -140,7 +143,18 @@ void Calibrate(){
 		PRINTF("Steps to close valve: 0x%02x \r\n",close_steps);
 		isStartReached = 0;	
 		
+		// TEST VALUES
+		open_steps = 0x5F;
+		close_steps = open_steps;
+		
+		PRINTF("Test Steps to open valve written in memory: 0x%02x \r\n",open_steps);
+		PRINTF("Test Steps to close valve written in memory: 0x%02x \r\n",close_steps);
+		
 		XDOM_SetSteps(open_steps,close_steps);
+		
+		// Set the default positions
+		steps_open_done = open_steps;
+		steps_close_done = 0;
 		
 		PRINTF("Step stored in memory: START 0x%02x STOP 0x%02x \r\n",XDOM_GetStartSteps(),XDOM_GetStopSteps());
 }
